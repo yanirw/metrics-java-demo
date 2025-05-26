@@ -2,9 +2,9 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/your-org/hello-world-metrics
+  repository: ghcr.io/yanirw/metrics-java-demo
   pullPolicy: IfNotPresent
-  tag: "1.0.0"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
