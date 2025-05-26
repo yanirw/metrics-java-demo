@@ -1,0 +1,24 @@
+# Simple single-stage build for testing
+FROM eclipse-temurin:17-jdk-alpine
+
+# Install Maven and curl
+RUN apk add --no-cache maven curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY pom.xml .
+COPY src ./src
+
+# Download dependencies first
+RUN mvn dependency:resolve
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Expose port
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "target/hello-world-metrics-1.0.0.jar"] 

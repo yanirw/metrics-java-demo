@@ -1,0 +1,13 @@
+target/
+.git/
+.gitignore
+README.md
+.mvn/
+mvnw
+mvnw.cmd
+*.md
+.DS_Store
+.idea/
+*.iml
+.vscode/
+helm-chart/ 

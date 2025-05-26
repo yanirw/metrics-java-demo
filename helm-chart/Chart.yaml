@@ -1,0 +1,17 @@
+apiVersion: v2
+name: hello-world-metrics
+description: A Helm chart for Hello World Java application with health metrics
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - java
+  - spring-boot
+  - metrics
+  - hello-world
+home: https://github.com/your-org/hello-world-metrics
+sources:
+  - https://github.com/your-org/hello-world-metrics
+maintainers:
+  - name: Your Name
+    email: your.email@example.com 
