@@ -1,0 +1,56 @@
+{{- if .Values.monitoring.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hello-world-metrics.fullname" . }}
+  labels:
+    {{- include "hello-world-metrics.labels" . | nindent 4 }}
+  {{- with .Values.monitoring.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.monitoring.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "hello-world-metrics.selectorLabels" . | nindent 6 }}
+  endpoints:
+  # Main Prometheus endpoint (contains all metrics)
+  - port: http
+    path: /actuator/prometheus
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+    scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+    {{- with .Values.monitoring.serviceMonitor.metricRelabelings }}
+    metricRelabelings:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  # Health metrics endpoint
+  - port: http
+    path: /actuator/metrics/health
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+    scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      targetLabel: metric_source
+      replacement: "actuator_health"
+  # JVM Memory metrics
+  - port: http
+    path: /actuator/metrics/jvm.memory.used
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+    scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      targetLabel: metric_source
+      replacement: "actuator_jvm_memory"
+  # HTTP requests metrics
+  - port: http
+    path: /actuator/metrics/http.server.requests
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+    scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      targetLabel: metric_source
+      replacement: "actuator_http_requests"
+{{- end }} 
