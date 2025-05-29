@@ -23,9 +23,12 @@ public class HelloController {
     @Autowired
     private MetricsConfig metricsConfig;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
     @GetMapping("/")
     public String hello() {
-        Timer.Sample sample = Timer.Sample.start();
+        Timer.Sample sample = Timer.start(meterRegistry);
         try {
             customRequestCounter.increment();
             return "Hello World!";
@@ -36,7 +39,7 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String helloEndpoint() {
-        Timer.Sample sample = Timer.Sample.start();
+        Timer.Sample sample = Timer.start(meterRegistry);
         try {
             customRequestCounter.increment();
             // Simulate some processing time
@@ -67,7 +70,8 @@ public class HelloController {
 
     @GetMapping("/metrics-demo")
     public String metricsDemo() {
-        return Timer.Sample.start().stop(customRequestTimer, () -> {
+        Timer.Sample sample = Timer.start(meterRegistry);
+        try {
             customRequestCounter.increment();
             // Simulate variable processing time
             try {
@@ -76,6 +80,8 @@ public class HelloController {
                 Thread.currentThread().interrupt();
             }
             return "This endpoint demonstrates custom metrics collection for GCP Monitoring!";
-        });
+        } finally {
+            sample.stop(customRequestTimer);
+        }
     }
 } 
